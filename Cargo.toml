@@ -3,6 +3,7 @@ name = "tick"
 version = "0.1.0"
 edition = "2024"
 authors = ["Moritz Moeller <virtualritz@protonmail.com>"]
+description = "Tick-based, quasi-fixed-point time measurement for working with frames/animation/video"
 keywords = ["time", "ticks", "animation", "precise", "fixed-point"]
 categories = ["game-development", "graphics", "multimedia:video", "no-std"]
 license = "Apache-2.0 OR BSD-3-Clause OR MIT OR Zlib"
