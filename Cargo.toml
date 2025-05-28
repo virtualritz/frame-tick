@@ -12,11 +12,19 @@ repository = "https://github.com/virtualritz/tick/"
 
 [dependencies]
 derive_more = { version = "2", features = ["full"] }
+document-features = "0.2"
 serde = { version = "1", optional = true, default-features = false, features = ["serde_derive"] }
 typed_floats = { version = "1", optional = true, default-features = false }
 
 [features]
-low_res = []
-serde = ["dep:serde", "typed_floats/serde"]
-std = ["typed_floats/std"]
+## Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
 float_frame_rate = ["dep:typed_floats"]
+## `TICKS_PER_SECOND` will be 25,600. Which is just fine if you do not need to work with NTSC frame rates.
+low_res = []
+## Add support for serialization via `serde`.
+serde = ["dep:serde", "typed_floats/serde"]
+## Use `std`; this adds `From<Tick>`/`Into<Tick>` implementations for c`std::time::Duration`.
+std = ["typed_floats/std"]
+
+[package.metadata.docs.rs]
+all-features = true

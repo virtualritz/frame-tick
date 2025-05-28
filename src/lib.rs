@@ -8,7 +8,7 @@
 //! > Common Multiple of all numbers in the list given in the article as well as
 //! > 11 and 13, which are needed for NTSC.*
 //!
-//! This makes is 'compatible' with lots of frame- and refresh rates without
+//! This makes it 'compatible' with lots of frame- and refresh rates without
 //! ever mapping outside of or repeating a frame. That is: without strobing.
 //!
 //! In particular, a `Tick` can represent exactly:
@@ -45,6 +45,9 @@
 //! /// One second at 120hz == frame № 120.
 //! assert_eq!(120, tick.to_frame(NonZeroU32::new(120).unwrap()));
 //! ```
+//!
+//! # Cargo features
+#![doc = document_features::document_features!()]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(test)]
