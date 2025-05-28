@@ -1,0 +1,22 @@
+[package]
+name = "tick"
+version = "0.1.0"
+edition = "2024"
+authors = ["Moritz Moeller <virtualritz@protonmail.com>"]
+keywords = ["time", "ticks", "animation", "precise", "fixed-point"]
+categories = ["game-development", "graphics", "multimedia:video", "no-std"]
+license = "Apache-2.0 OR BSD-3-Clause OR MIT OR Zlib"
+readme = "README.md"
+documentation = "https://docs.rs/tick/"
+repository = "https://github.com/virtualritz/tick/"
+
+[dependencies]
+derive_more = { version = "2", features = ["full"] }
+serde = { version = "1", optional = true, default-features = false, features = ["serde_derive"] }
+typed_floats = { version = "1", optional = true, default-features = false }
+
+[features]
+low_res = []
+serde = ["dep:serde", "typed_floats/serde"]
+std = ["typed_floats/std"]
+float_frame_rate = ["dep:typed_floats"]
