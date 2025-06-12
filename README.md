@@ -1,4 +1,4 @@
-# `tick`
+# `frame-tick`
 
 <!-- cargo-rdme start -->
 
