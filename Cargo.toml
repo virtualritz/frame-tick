@@ -19,12 +19,12 @@ typed_floats = { version = "1", optional = true, default-features = false }
 [features]
 ## Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
 float_frame_rate = ["dep:typed_floats"]
-## [`TICKS_PER_SECOND`] will be `3_603_600`. Which is what you need if you e.g. work with NTSC frame rates.
-high_res = []
+## [`TICKS_PER_SECOND`] will be `25_600`. Which is just fine if you do not need to work with NTSC frame rates.
+low_res = []
 ## Add support for serialization via `serde`.
 serde = ["dep:serde", "typed_floats/serde"]
-## Use `std`; this adds `From<Tick>`/`Into<Tick>` implementations for [`std::time::Duration`] as well as `Display`.
-std = ["typed_floats/std"]
+## Use `std`; this implements `Display` as well as `From<Tick>`/`Into<Tick>` for [`std::time::Duration`].
+std = []
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["float_frame_rate", "serde", "std"]

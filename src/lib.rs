@@ -36,22 +36,19 @@
 //!
 //! ```
 //! # use core::num::NonZeroU32;
-//! use tick::{FrameRateConversion, Tick};
+//! use frame_tick::{FrameRate, FrameRateConversion, Tick};
 //!
 //! let tick = Tick::from_secs(1.0);
 //!
 //! /// A round trip is lossless.
 //! assert_eq!(1.0, tick.to_secs());
 //! /// One second at 120hz == frame № 120.
-//! assert_eq!(120, tick.to_frame(NonZeroU32::new(120).unwrap()));
+//! assert_eq!(120, tick.to_frame(FrameRate::new(120).unwrap()));
 //! ```
 //!
 //! # Cargo features
 #![doc = document_features::document_features!()]
 #![cfg_attr(not(feature = "std"), no_std)]
-
-#[cfg(test)]
-mod tests;
 
 use core::{
     convert::{AsMut, AsRef},
@@ -59,24 +56,32 @@ use core::{
     ops::{Add, Div, Mul, Sub},
     str::FromStr,
 };
+#[cfg(all(feature = "std", doc))]
+use std::time::Duration;
+
 #[cfg(feature = "std")]
-use std::{
-    fmt::{Display, Error, Formatter},
-    time::Duration,
-};
+pub mod std_traits;
+
+#[cfg(test)]
+mod tests;
+
 #[cfg(feature = "float_frame_rate")]
-pub use typed_floats::StrictlyPositiveFinite;
+pub type FrameRateF32 = typed_floats::StrictlyPositiveFinite<f32>;
+#[cfg(feature = "float_frame_rate")]
+pub type FrameRateF64 = typed_floats::StrictlyPositiveFinite<f64>;
+
+pub type FrameRate = NonZeroU32;
 
 /// The number of ticks per second.
 ///
-/// Use the `high_res` feature to configure this.
-#[cfg(not(feature = "high_res"))]
-pub const TICKS_PER_SECOND: i64 = 25_200;
+/// Use the `low_res` feature to configure this.
+#[cfg(not(feature = "low_res"))]
+pub const TICKS_PER_SECOND: i64 = 3_603_600;
 /// The number of ticks per second.
 ///
-/// Use the `high_res` feature to configure this.
-#[cfg(feature = "high_res")]
-pub const TICKS_PER_SECOND: i64 = 3_603_600;
+/// Use the `low_res` feature to configure this.
+#[cfg(feature = "low_res")]
+pub const TICKS_PER_SECOND: i64 = 25_200;
 
 /// Fixed-point representation of time where each second is divided into
 /// [`TICKS_PER_SECOND`].
@@ -269,14 +274,6 @@ impl Div for Tick {
     }
 }
 
-// Optional: Implement Display for better debugging
-#[cfg(feature = "std")]
-impl Display for Tick {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "Tick({})", self.0)
-    }
-}
-
 impl Tick {
     pub fn new(value: i64) -> Self {
         Self(value)
@@ -299,15 +296,15 @@ pub trait FrameRateConversion<T> {
     fn from_frame(frame: i64, frame_rate: T) -> Self;
 }
 
-impl FrameRateConversion<NonZeroU32> for Tick {
+impl FrameRateConversion<FrameRate> for Tick {
     /// Convert ticks to frame number at the specified integer frame rate.
-    fn to_frame(self, frame_rate: NonZeroU32) -> i64 {
+    fn to_frame(self, frame_rate: FrameRate) -> i64 {
         (self.0 as i128 * frame_rate.get() as i128 / TICKS_PER_SECOND as i128)
             as _
     }
 
     /// Convert frame number to ticks at the specified integer frame rate.
-    fn from_frame(frame: i64, frame_rate: NonZeroU32) -> Self {
+    fn from_frame(frame: i64, frame_rate: FrameRate) -> Self {
         Self(
             (frame as i128 * TICKS_PER_SECOND as i128
                 / frame_rate.get() as i128) as _,
@@ -316,13 +313,17 @@ impl FrameRateConversion<NonZeroU32> for Tick {
 }
 
 #[cfg(feature = "float_frame_rate")]
-impl FrameRateConversion<StrictlyPositiveFinite<f32>> for Tick {
-    fn to_frame(self, frame_rate: StrictlyPositiveFinite<f32>) -> i64 {
+impl FrameRateConversion<FrameRateF32> for Tick {
+    /// Convert ticks to frame number at the specified floating point frame
+    /// rate.
+    fn to_frame(self, frame_rate: FrameRateF32) -> i64 {
         (self.0 as f64 * frame_rate.get() as f64 / TICKS_PER_SECOND as f64)
             .round() as _
     }
 
-    fn from_frame(frame: i64, frame_rate: StrictlyPositiveFinite<f32>) -> Self {
+    /// Convert frame number to ticks at the specified floating point frame
+    /// rate.
+    fn from_frame(frame: i64, frame_rate: FrameRateF32) -> Self {
         Self(
             (frame as f64 * TICKS_PER_SECOND as f64 / frame_rate.get() as f64)
                 .round() as _,
@@ -331,31 +332,20 @@ impl FrameRateConversion<StrictlyPositiveFinite<f32>> for Tick {
 }
 
 #[cfg(feature = "float_frame_rate")]
-impl FrameRateConversion<StrictlyPositiveFinite<f64>> for Tick {
-    fn to_frame(self, frame_rate: StrictlyPositiveFinite<f64>) -> i64 {
+impl FrameRateConversion<FrameRateF64> for Tick {
+    /// Convert ticks to frame number at the specified floating point frame
+    /// rate.
+    fn to_frame(self, frame_rate: FrameRateF64) -> i64 {
         (self.0 as f64 * frame_rate.get() / TICKS_PER_SECOND as f64).round()
             as _
     }
 
-    fn from_frame(frame: i64, frame_rate: StrictlyPositiveFinite<f64>) -> Self {
+    /// Convert frame number to ticks at the specified floating point frame
+    /// rate.
+    fn from_frame(frame: i64, frame_rate: FrameRateF64) -> Self {
         Self(
             (frame as f64 * TICKS_PER_SECOND as f64 / frame_rate.get()).round()
                 as _,
         )
-    }
-}
-
-#[cfg(feature = "std")]
-impl From<Duration> for Tick {
-    fn from(duration: Duration) -> Self {
-        let secs = duration.as_secs_f64();
-        Self::from_secs(secs)
-    }
-}
-
-#[cfg(feature = "std")]
-impl From<Tick> for Duration {
-    fn from(tick: Tick) -> Self {
-        Duration::from_secs_f64(tick.to_secs())
     }
 }
