@@ -13,37 +13,37 @@
 //!
 //! In particular, a `Tick` can represent exactly:
 //!
-//! * 24hz and 48hz, great for movie playback.
+//! - 24hz and 48hz, great for movie playback.
 //!
-//! * 6hz, 8hz and 12hz, great for animating on 4s, 3s and 2s.
+//! - 6hz, 8hz and 12hz, great for animating on 4s, 3s and 2s.
 //!
-//! * 29.97hz, 59.94hz NTSC found in Japan, South Korea and the USA.
+//! - 29.97hz, 59.94hz NTSC found in Japan, South Korea and the USA.
 //!
-//! * 30hz, 60hz, for internet video and TV in the USA.
+//! - 30hz, 60hz, for internet video and TV in the USA.
 //!
-//! * 25hz and 50hz, for TV in the EU.
+//! - 25hz and 50hz, for TV in the EU.
 //!
-//! * 72hz, for Oculus Quest 1.
+//! - 72hz, for Oculus Quest 1.
 //!
-//! * 90hz for Quest 2, Rift and other headsets.
+//! - 90hz for Quest 2, Rift and other headsets.
 //!
-//! * 120hz, 144hz and 240hz, for newer VR headesets and high frequency
+//! - 120hz, 144hz and 240hz, for newer VR headesets and high frequency
 //!   monitors.
 //!
-//! * And many more.
+//! - And many more.
 //!
 //! # Examples
 //!
 //! ```
 //! # use core::num::NonZeroU32;
-//! use frame_tick::{FrameRate, FrameRateConversion, Tick};
+//! use frame_tick::{FrameRateConversion, FramesPerSec, Tick};
 //!
 //! let tick = Tick::from_secs(1.0);
 //!
 //! /// A round trip is lossless.
 //! assert_eq!(1.0, tick.to_secs());
 //! /// One second at 120hz == frame № 120.
-//! assert_eq!(120, tick.to_frame(FrameRate::new(120).unwrap()));
+//! assert_eq!(120, tick.to_frame(FramesPerSec::new(120).unwrap()));
 //! ```
 //!
 //! # Cargo features
@@ -66,11 +66,11 @@ pub mod std_traits;
 mod tests;
 
 #[cfg(feature = "float_frame_rate")]
-pub type FrameRateF32 = typed_floats::StrictlyPositiveFinite<f32>;
+pub type FramesPerSecF32 = typed_floats::StrictlyPositiveFinite<f32>;
 #[cfg(feature = "float_frame_rate")]
-pub type FrameRateF64 = typed_floats::StrictlyPositiveFinite<f64>;
+pub type FramesPerSecF64 = typed_floats::StrictlyPositiveFinite<f64>;
 
-pub type FrameRate = NonZeroU32;
+pub type FramesPerSec = NonZeroU32;
 
 /// The number of ticks per second.
 ///
@@ -296,15 +296,15 @@ pub trait FrameRateConversion<T> {
     fn from_frame(frame: i64, frame_rate: T) -> Self;
 }
 
-impl FrameRateConversion<FrameRate> for Tick {
+impl FrameRateConversion<FramesPerSec> for Tick {
     /// Convert ticks to frame number at the specified integer frame rate.
-    fn to_frame(self, frame_rate: FrameRate) -> i64 {
+    fn to_frame(self, frame_rate: FramesPerSec) -> i64 {
         (self.0 as i128 * frame_rate.get() as i128 / TICKS_PER_SECOND as i128)
             as _
     }
 
     /// Convert frame number to ticks at the specified integer frame rate.
-    fn from_frame(frame: i64, frame_rate: FrameRate) -> Self {
+    fn from_frame(frame: i64, frame_rate: FramesPerSec) -> Self {
         Self(
             (frame as i128 * TICKS_PER_SECOND as i128
                 / frame_rate.get() as i128) as _,
@@ -313,17 +313,17 @@ impl FrameRateConversion<FrameRate> for Tick {
 }
 
 #[cfg(feature = "float_frame_rate")]
-impl FrameRateConversion<FrameRateF32> for Tick {
+impl FrameRateConversion<FramesPerSecF32> for Tick {
     /// Convert ticks to frame number at the specified floating point frame
     /// rate.
-    fn to_frame(self, frame_rate: FrameRateF32) -> i64 {
+    fn to_frame(self, frame_rate: FramesPerSecF32) -> i64 {
         (self.0 as f64 * frame_rate.get() as f64 / TICKS_PER_SECOND as f64)
             .round() as _
     }
 
     /// Convert frame number to ticks at the specified floating point frame
     /// rate.
-    fn from_frame(frame: i64, frame_rate: FrameRateF32) -> Self {
+    fn from_frame(frame: i64, frame_rate: FramesPerSecF32) -> Self {
         Self(
             (frame as f64 * TICKS_PER_SECOND as f64 / frame_rate.get() as f64)
                 .round() as _,
@@ -332,17 +332,17 @@ impl FrameRateConversion<FrameRateF32> for Tick {
 }
 
 #[cfg(feature = "float_frame_rate")]
-impl FrameRateConversion<FrameRateF64> for Tick {
+impl FrameRateConversion<FramesPerSecF64> for Tick {
     /// Convert ticks to frame number at the specified floating point frame
     /// rate.
-    fn to_frame(self, frame_rate: FrameRateF64) -> i64 {
+    fn to_frame(self, frame_rate: FramesPerSecF64) -> i64 {
         (self.0 as f64 * frame_rate.get() / TICKS_PER_SECOND as f64).round()
             as _
     }
 
     /// Convert frame number to ticks at the specified floating point frame
     /// rate.
-    fn from_frame(frame: i64, frame_rate: FrameRateF64) -> Self {
+    fn from_frame(frame: i64, frame_rate: FramesPerSecF64) -> Self {
         Self(
             (frame as f64 * TICKS_PER_SECOND as f64 / frame_rate.get()).round()
                 as _,

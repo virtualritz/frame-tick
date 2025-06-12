@@ -40,14 +40,14 @@ In particular, a `Tick` can represent exactly:
 ## Examples
 
 ```rust
-use frame_tick::{FrameRate, FrameRateConversion, Tick};
+use frame_tick::{FrameRateConversion, FramesPerSec, Tick};
 
 let tick = Tick::from_secs(1.0);
 
 /// A round trip is lossless.
 assert_eq!(1.0, tick.to_secs());
 /// One second at 120hz == frame № 120.
-assert_eq!(120, tick.to_frame(FrameRate::new(120).unwrap()));
+assert_eq!(120, tick.to_frame(FramesPerSec::new(120).unwrap()));
 ```
 
 ## Cargo features
