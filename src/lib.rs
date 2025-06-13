@@ -53,7 +53,7 @@
 use core::{
     convert::{AsMut, AsRef},
     num::{NonZeroU32, ParseIntError},
-    ops::{Add, Div, Mul, Sub},
+    ops::{Add, Sub},
     str::FromStr,
 };
 #[cfg(all(feature = "std", doc))]
@@ -178,24 +178,21 @@ macro_rules! impl_from_tick {
                 tick.0 as _
             }
         }
+
+        impl From<&Tick> for $ty {
+            fn from(tick: &Tick) -> Self {
+                tick.0 as _
+            }
+        }
     };
 }
 
-impl_from_tick!(u8);
-impl_from_tick!(u16);
-impl_from_tick!(u32);
 impl_from_tick!(u64);
 impl_from_tick!(u128);
 impl_from_tick!(usize);
-impl_from_tick!(i8);
-impl_from_tick!(i16);
-impl_from_tick!(i32);
 impl_from_tick!(i64);
 impl_from_tick!(i128);
 impl_from_tick!(isize);
-impl_from_tick!(f32);
-
-impl_from_tick!(f64);
 
 impl_tick_from!(u8);
 impl_tick_from!(u16);
@@ -207,13 +204,21 @@ impl_tick_from!(i64);
 
 impl From<f32> for Tick {
     fn from(value: f32) -> Self {
-        Self((value + 0.5) as _)
+        Self(if value >= 0.0 {
+            value + 0.5
+        } else {
+            value - 0.5
+        } as _)
     }
 }
 
 impl From<f64> for Tick {
     fn from(value: f64) -> Self {
-        Self((value + 0.5) as _)
+        Self(if value >= 0.0 {
+            value + 0.5
+        } else {
+            value - 0.5
+        } as _)
     }
 }
 
@@ -238,39 +243,6 @@ impl Sub for Tick {
 
     fn sub(self, rhs: Self) -> Self::Output {
         Tick(self.0 - rhs.0)
-    }
-}
-
-// Multiplication is done with floating point numbers and rounded to the nearest
-// tick.
-impl Mul for Tick {
-    type Output = Tick;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        let result = (self.0 as f64) * (rhs.0 as f64);
-        let rounded = if result >= 0.0 {
-            result + 0.5
-        } else {
-            result - 0.5
-        };
-
-        Tick(rounded as i64)
-    }
-}
-
-// Division is done with floating point numbers and rounded to the nearest tick.
-impl Div for Tick {
-    type Output = Tick;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        let result = (self.0 as f64) / (rhs.0 as f64);
-        let rounded = if result >= 0.0 {
-            result + 0.5
-        } else {
-            result - 0.5
-        };
-
-        Tick(rounded as i64)
     }
 }
 

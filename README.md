@@ -1,5 +1,8 @@
 # `frame-tick`
 
+[![Documentation](https://docs.rs/frame-tick/badge.svg)](https://docs.rs/frame-tick)
+[![Crate](https://img.shields.io/crates/v/frame-tick.svg)](https://crates.io/crates/frame-tick)
+
 <!-- cargo-rdme start -->
 
 Fixed-point representation of time where each second is divided into
