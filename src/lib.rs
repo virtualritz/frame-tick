@@ -53,7 +53,7 @@
 use core::{
     convert::{AsMut, AsRef},
     num::{NonZeroU32, ParseIntError},
-    ops::{Add, Sub},
+    ops::{Add, Div, Mul, Sub},
     str::FromStr,
 };
 #[cfg(all(feature = "std", doc))]
@@ -88,7 +88,7 @@ pub const TICKS_PER_SECOND: i64 = 25_200;
 ///
 /// This type can also represent negative time as this is common in DCCs like a
 /// video editor or animation system where this type would typically be used.
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Tick(i64);
 
@@ -193,6 +193,8 @@ impl_from_tick!(usize);
 impl_from_tick!(i64);
 impl_from_tick!(i128);
 impl_from_tick!(isize);
+impl_from_tick!(f32);
+impl_from_tick!(f64);
 
 impl_tick_from!(u8);
 impl_tick_from!(u16);
@@ -202,23 +204,31 @@ impl_tick_from!(i16);
 impl_tick_from!(i32);
 impl_tick_from!(i64);
 
-impl From<f32> for Tick {
-    fn from(value: f32) -> Self {
-        Self(if value >= 0.0 {
+macro_rules! round {
+    ($ty:ty, $value:expr) => {{
+        let value = $value;
+        #[cfg(feature = "std")]
+        let value = value.round();
+        #[cfg(not(feature = "std"))]
+        let value = if value >= 0.0 {
             value + 0.5
         } else {
             value - 0.5
-        } as _)
+        };
+
+        value as i64
+    }};
+}
+
+impl From<f32> for Tick {
+    fn from(value: f32) -> Self {
+        Self(round!(f32, value))
     }
 }
 
 impl From<f64> for Tick {
     fn from(value: f64) -> Self {
-        Self(if value >= 0.0 {
-            value + 0.5
-        } else {
-            value - 0.5
-        } as _)
+        Self(round!(f32, value))
     }
 }
 
@@ -246,19 +256,87 @@ impl Sub for Tick {
     }
 }
 
+macro_rules! impl_mul_div_float {
+    ($ty:ty) => {
+        impl Mul<$ty> for Tick {
+            type Output = Self;
+
+            fn mul(self, rhs: $ty) -> Self::Output {
+                let value = self.0 as $ty * rhs;
+                Self(round!($ty, value))
+            }
+        }
+
+        impl Div<$ty> for Tick {
+            type Output = Self;
+
+            fn div(self, rhs: $ty) -> Self::Output {
+                let value = self.0 as $ty / rhs;
+                Self(round!($ty, value))
+            }
+        }
+    };
+}
+
+impl_mul_div_float!(f32);
+impl_mul_div_float!(f64);
+
+macro_rules! impl_mul_div_int {
+    ($ty:ty) => {
+        impl Mul<$ty> for Tick {
+            type Output = Self;
+
+            fn mul(self, rhs: $ty) -> Self::Output {
+                Self((self.0 as $ty * rhs) as _)
+            }
+        }
+
+        impl Div<$ty> for Tick {
+            type Output = Self;
+
+            fn div(self, rhs: $ty) -> Self::Output {
+                Self((self.0 as $ty / rhs) as _)
+            }
+        }
+    };
+}
+
+impl_mul_div_int!(u8);
+impl_mul_div_int!(u16);
+impl_mul_div_int!(u32);
+impl_mul_div_int!(u64);
+impl_mul_div_int!(u128);
+impl_mul_div_int!(usize);
+impl_mul_div_int!(i8);
+impl_mul_div_int!(i16);
+impl_mul_div_int!(i32);
+impl_mul_div_int!(i64);
+impl_mul_div_int!(i128);
+impl_mul_div_int!(isize);
+
 impl Tick {
+    #[inline]
     pub fn new(value: i64) -> Self {
         Self(value)
     }
 
     /// Create ticks from seconds.
+    #[inline]
     pub fn from_secs(secs: f64) -> Self {
         Self((secs * TICKS_PER_SECOND as f64) as i64)
     }
 
     /// Convert ticks to seconds.
+    #[inline]
     pub fn to_secs(&self) -> f64 {
         self.0 as f64 / TICKS_PER_SECOND as f64
+    }
+
+    /// Linearly interpolate between two ticks.
+    #[inline]
+    pub fn lerp(self, other: Self, t: f64) -> Self {
+        let t = t.clamp(0.0, 1.0);
+        Self(round!(f64, self.0 as f64 * (1.0 - t) + other.0 as f64 * t))
     }
 }
 

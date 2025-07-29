@@ -120,3 +120,24 @@ fn test_high_precision_frame_rates() {
     let back_to_ticks = Tick::from_frame(frames, fps_2997);
     assert_eq!(back_to_ticks, hundred_seconds);
 }
+
+#[test]
+fn test_ops() {
+    let ticks = Tick::from_secs(1.0);
+
+    // Test addition.
+    assert_eq!(ticks + ticks, Tick::from_secs(2.0));
+    assert_eq!(ticks + Tick::from_secs(0.5), Tick::from_secs(1.5));
+
+    // Test subtraction.
+    assert_eq!(ticks - ticks, Tick::from_secs(0.0));
+    assert_eq!(ticks - Tick::from_secs(0.5), Tick::from_secs(0.5));
+
+    // Test multiplication.
+    assert_eq!(ticks * 2.0, Tick::from_secs(2.0));
+    assert_eq!(ticks * 0.5, Tick::from_secs(0.5));
+
+    // Test division.
+    assert_eq!(ticks / 2.0, Tick::from_secs(0.5));
+    assert_eq!(ticks / 0.5, Tick::from_secs(2.0));
+}
