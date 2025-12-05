@@ -11,10 +11,9 @@ Fixed-point representation of time where each second is divided into
 This crate was inspired by [this article](https://iquilezles.org/articles/ticks/)
 from [Inigo Quilez](https://iquilezles.org/). Please refer to this for a
 more detailed explanation.
-
-> _Note that the default for `TICKS_PER_SECOND`, 3,603,600, is the Least
+> *Note that the default for `TICKS_PER_SECOND`, 3,603,600, is the Least
 > Common Multiple of all numbers in the list given in the article as well as
-> 11 and 13, which are needed for NTSC._
+> 11 and 13, which are needed for NTSC.*
 
 This makes it 'compatible' with lots of frame- and refresh rates without
 ever mapping outside of or repeating a frame. That is: without strobing.
@@ -55,13 +54,11 @@ assert_eq!(120, tick.to_frame(FramesPerSec::new(120).unwrap()));
 
 ## Cargo features
 
-- `float_frame_rate` — Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
-
-- `low_res` — `TICKS_PER_SECOND` will be `25_600`. Which is just fine if you do not need to work with NTSC frame rates.
-
-- `serde` — Add support for serialization via `serde`.
-
-- `std` — Use std; this implements Display as well as `From<Tick>`/`Into<Tick>` for `std::time::Duration`.
+- **`facet`** — Add support for reflection via [`facet`](https://docs.rs/facet/).
+- **`float_frame_rate`** — Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
+- **`low_res`** — [`TICKS_PER_SECOND`] will be `25_600`. Which is just fine if you do not need to work with NTSC frame rates.
+- **`serde`** — Add support for serialization via `serde`.
+- **`std`** — Use `std`; this implements `Display` as well as `From<Tick>`/`Into<Tick>` for [`std::time::Duration`].
 
 <!-- cargo-rdme end -->
 

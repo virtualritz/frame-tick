@@ -1,6 +1,6 @@
 [package]
 name = "frame-tick"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 authors = ["Moritz Moeller <virtualritz@protonmail.com>"]
 description = "Tick-based, quasi-fixed-point time measurement for working with frames/animation/video"
@@ -13,10 +13,13 @@ repository = "https://github.com/virtualritz/frame-tick/"
 
 [dependencies]
 document-features = "0.2"
+facet = { version = "0.31", optional = true }
 serde = { version = "1", optional = true, default-features = false, features = ["serde_derive"] }
 typed_floats = { version = "1", optional = true, default-features = false }
 
 [features]
+## Add support for reflection via [`facet`](https://docs.rs/facet/).
+facet = ["dep:facet"]
 ## Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
 float_frame_rate = ["dep:typed_floats"]
 ## [`TICKS_PER_SECOND`] will be `25_600`. Which is just fine if you do not need to work with NTSC frame rates.
@@ -27,4 +30,4 @@ serde = ["dep:serde", "typed_floats/serde"]
 std = []
 
 [package.metadata.docs.rs]
-features = ["float_frame_rate", "serde", "std"]
+features = ["facet", "float_frame_rate", "serde", "std"]

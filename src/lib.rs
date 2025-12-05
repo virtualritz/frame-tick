@@ -56,6 +56,8 @@ use core::{
     ops::{Add, Div, Mul, Sub},
     str::FromStr,
 };
+#[cfg(feature = "facet")]
+use facet::Facet;
 #[cfg(all(feature = "std", doc))]
 use std::time::Duration;
 
@@ -89,6 +91,7 @@ pub const TICKS_PER_SECOND: i64 = 25_200;
 /// This type can also represent negative time as this is common in DCCs like a
 /// video editor or animation system where this type would typically be used.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "facet", derive(Facet))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Tick(i64);
 
@@ -103,6 +106,7 @@ impl IntoIterator for Tick {
 
 /// An iterator over [`Tick`]s.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "facet", derive(Facet))]
 pub struct TickIter(i64);
 
 impl Iterator for TickIter {
@@ -133,6 +137,7 @@ impl DoubleEndedIterator for TickIter {
 
 /// An iterator over [`Tick`]s in reverse order.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "facet", derive(Facet))]
 pub struct TickRevIter(i64);
 
 impl Iterator for TickRevIter {
@@ -228,7 +233,7 @@ impl From<f32> for Tick {
 
 impl From<f64> for Tick {
     fn from(value: f64) -> Self {
-        Self(round!(f32, value))
+        Self(round!(f64, value))
     }
 }
 
