@@ -55,13 +55,16 @@ assert_eq!(120, tick.to_frames(FramesPerSec::new(120).unwrap()));
 
 ## Cargo features
 
-- **`facet`** — Add support for reflection via [`facet`](https://docs.rs/facet/).
-- **`float_frame_rate`** — Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
-- **`low_res`** — [`TICKS_PER_SECOND`] will be `25_600`. Which is just fine if you do not need to work with NTSC frame rates.
-- **`serde`** — Add support for serialization via `serde`.
-- **`std`** — Use `std`; this implements `Display` as well as `From<Tick>`/`Into<Tick>` for [`std::time::Duration`].
-
 <!-- cargo-rdme end -->
+
+- **`facet`** — Add support for reflection via [`facet`](https://docs.rs/facet/).
+- **`float_frame_rate`** — Add support for non-integer frame rates. This pulls
+  in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
+- **`low_res`** — `TICKS_PER_SECOND` will be `25_200`. Which is just fine if
+  you do not need to work with NTSC frame rates.
+- **`serde`** — Add support for serialization via `serde`.
+- **`std`** — Use `std`; this implements `Display` as well as
+  `From<Tick>`/`Into<Tick>` for `std::time::Duration`.
 
 ## License
 

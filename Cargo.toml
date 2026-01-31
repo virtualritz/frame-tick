@@ -1,6 +1,6 @@
 [package]
 name = "frame-tick"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 authors = ["Moritz Moeller <virtualritz@protonmail.com>"]
 description = "Tick-based, quasi-fixed-point time measurement for working with frames/animation/video"
@@ -22,7 +22,7 @@ typed_floats = { version = "1", optional = true, default-features = false }
 facet = ["dep:facet"]
 ## Add support for non-integer frame rates. This pulls in the [`typed_floats`](https://docs.rs/typed_floats/) crate.
 float_frame_rate = ["dep:typed_floats"]
-## [`TICKS_PER_SECOND`] will be `25_600`. Which is just fine if you do not need to work with NTSC frame rates.
+## [`TICKS_PER_SECOND`] will be `25_200`. Which is just fine if you do not need to work with NTSC frame rates.
 low_res = []
 ## Add support for serialization via `serde`.
 serde = ["dep:serde", "typed_floats/serde"]
