@@ -81,6 +81,10 @@ pub type FramesPerSec = NonZeroU32;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "facet", derive(Facet))]
 #[cfg_attr(feature = "facet", facet(opaque))]
+#[cfg_attr(
+    feature = "rkyv",
+    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
+)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FrameRate {
     /// Numerator (frames).
@@ -194,6 +198,10 @@ pub const TICKS_PER_SECOND: i64 = 25_200;
 /// video editor or animation system where this type would typically be used.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[cfg_attr(feature = "facet", derive(Facet))]
+#[cfg_attr(
+    feature = "rkyv",
+    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
+)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Tick(i64);
 

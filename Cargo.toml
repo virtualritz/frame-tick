@@ -1,6 +1,6 @@
 [package]
 name = "frame-tick"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2024"
 authors = ["Moritz Moeller <virtualritz@protonmail.com>"]
 description = "Tick-based, quasi-fixed-point time measurement for working with frames/animation/video"
@@ -14,6 +14,7 @@ repository = "https://github.com/virtualritz/frame-tick/"
 [dependencies]
 document-features = "0.2"
 facet = { version = ">=0.42", optional = true }
+rkyv = { version = "0.8", optional = true, default-features = false }
 serde = { version = "1", optional = true, default-features = false, features = ["serde_derive"] }
 typed_floats = { version = "1", optional = true, default-features = false }
 
@@ -24,10 +25,12 @@ facet = ["dep:facet"]
 float_frame_rate = ["dep:typed_floats"]
 ## [`TICKS_PER_SECOND`] will be `25_200`. Which is just fine if you do not need to work with NTSC frame rates.
 low_res = []
-## Add support for serialization via `serde`.
+## Add support for zero-copy serialization via [`rkyv`](https://docs.rs/rkyv/).
+rkyv = ["dep:rkyv"]
+## Add support for serialization via [`serde`](https://docs.rs/serde/).
 serde = ["dep:serde", "typed_floats/serde"]
 ## Use `std`; this implements `Display` as well as `From<Tick>`/`Into<Tick>` for [`std::time::Duration`].
-std = []
+std = ["rkyv?/std"]
 
 [package.metadata.docs.rs]
-features = ["facet", "float_frame_rate", "serde", "std"]
+features = ["facet", "float_frame_rate", "rkyv", "serde", "std"]

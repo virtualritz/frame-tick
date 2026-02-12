@@ -9,7 +9,7 @@ fn test_from_duration() {
     let tick = Tick::from(duration);
 
     // 2.5 seconds * 3,603,600 ticks/second = 9,009,000 ticks.
-    assert_eq!(tick.0, (2.5 * TICKS_PER_SECOND as f64) as _);
+    assert_eq!(tick.0, (2.5 * TICKS_PER_SECOND as f64) as i64);
 
     // Verify round-trip conversion.
     let back_to_duration = Duration::from(tick);
@@ -33,7 +33,7 @@ fn test_subsecond_precision() {
     let tick = Tick::from(duration);
 
     // 1.5 seconds * 3,603,600 ticks/second = 5,405,400 ticks,
-    assert_eq!(tick.0, (1.5 * TICKS_PER_SECOND as f64) as _);
+    assert_eq!(tick.0, (1.5 * TICKS_PER_SECOND as f64) as i64);
 }
 
 #[test]
