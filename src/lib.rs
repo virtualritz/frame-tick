@@ -200,7 +200,10 @@ pub const TICKS_PER_SECOND: i64 = 25_200;
 #[cfg_attr(feature = "facet", derive(Facet))]
 #[cfg_attr(
     feature = "rkyv",
-    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
+    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+    rkyv(attr(derive(
+        Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash
+    )))
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Tick(i64);
