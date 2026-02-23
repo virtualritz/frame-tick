@@ -1,6 +1,6 @@
 [package]
 name = "frame-tick"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2024"
 authors = ["Moritz Moeller <virtualritz@protonmail.com>"]
 description = "Tick-based, quasi-fixed-point time measurement for working with frames/animation/video"
@@ -27,10 +27,14 @@ float_frame_rate = ["dep:typed_floats"]
 low_res = []
 ## Add support for zero-copy serialization via [`rkyv`](https://docs.rs/rkyv/).
 rkyv = ["dep:rkyv"]
+## Enable [`bytecheck`](https://docs.rs/bytecheck/) validation for `rkyv`. Adds `Portable` impl to `ArchivedTick`.
+bytecheck = ["rkyv", "rkyv/bytecheck"]
+## Enable [`bytecheck`](https://docs.rs/bytecheck/) validation for `rkyv`. Adds `Portable` impl to `ArchivedTick`.
+rkyv-bytecheck = ["rkyv", "rkyv/bytecheck"]
 ## Add support for serialization via [`serde`](https://docs.rs/serde/).
 serde = ["dep:serde", "typed_floats/serde"]
 ## Use `std`; this implements `Display` as well as `From<Tick>`/`Into<Tick>` for [`std::time::Duration`].
 std = ["rkyv?/std"]
 
 [package.metadata.docs.rs]
-features = ["facet", "float_frame_rate", "rkyv", "serde", "std"]
+features = ["facet", "float_frame_rate", "rkyv", "rkyv-bytecheck", "serde", "std"]
